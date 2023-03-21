@@ -8,72 +8,69 @@
 import UIKit
 
 final class SearchViewController: UIViewController {
-    
-    @IBOutlet weak var searchTextField: UITextField!
     @IBOutlet weak var contentScrollView: UIScrollView!
     @IBOutlet weak var goBackButton: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.hideKeyboard()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(keyBoardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyBoardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
+        addKeyboardObserver()
     }
     
-    @IBOutlet weak var stackBottomConstraint: NSLayoutConstraint!
+    func addKeyboardObserver() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyBoardWillShowAndHide(notification:)),
+            name: UIResponder.keyboardWillShowNotification, object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyBoardWillShowAndHide(notification:)),
+            name: UIResponder.keyboardWillHideNotification, object: nil
+        )
+    }
     
-    @objc func keyBoardWillShow(notification: NSNotification) {
-            //handle appearing of keyboard here
+    var prevOffset: CGFloat = 0.0, prevPosition: CGFloat = 0.0
+    
+    
+    @objc func keyBoardWillShowAndHide(notification: NSNotification) {
         let userInfo = notification.userInfo
         let endValue = userInfo![UIResponder.keyboardFrameEndUserInfoKey]
         let durationValue = userInfo![UIResponder.keyboardAnimationDurationUserInfoKey]
-        let curveValue = userInfo![UIResponder.keyboardAnimationCurveUserInfoKey]
         
-        print("보인다", type(of: endValue), type(of: durationValue), type(of: curveValue))
-        
-//        let endRect = (endValue as AnyObject).cgRectValue
-        let endRect = view.convert((endValue as AnyObject).cgRectValue, from: view.window)
-                    
-        let duration = (durationValue as AnyObject).doubleValue
-        
-//        contentView.frame.maxY = endRect.origin.y
-        
-        print("show", contentScrollView.frame.maxY - endRect.origin.y, contentScrollView.frame.maxY, endRect.origin.y, duration)
-    }
-
-    @objc func keyBoardWillHide(notification: NSNotification) {
-              //handle dismiss of keyboard here
-        print("안보인다", type(of:notification.object))
-        
-        let userInfo = notification.userInfo
-        let endValue = userInfo![UIResponder.keyboardFrameEndUserInfoKey]
-        let durationValue = userInfo![UIResponder.keyboardAnimationDurationUserInfoKey]
-        let curveValue = userInfo![UIResponder.keyboardAnimationCurveUserInfoKey]
-        
-        
-//        let endRect = (endValue as AnyObject).cgRectValue
         let endRect = view.convert((endValue as AnyObject).cgRectValue, from: view.window)
         
         let duration = (durationValue as AnyObject).doubleValue
         
-//        contentView.frame.origin.y = endRect.origin.y
+        let keyboardOverlap = contentScrollView.frame.maxY - endRect.origin.y
         
+//        print(keyboardOverlap, contentScrollView.contentOffset.y)
         
-        print("hide", contentScrollView.frame.maxY - endRect.origin.y, contentScrollView.frame.maxY, endRect.origin.y, duration)
-     }
+        let cottttt = keyboardOverlap - contentScrollView.contentOffset.y
+        
+        UIView.animate(withDuration: duration!, delay: 0.0) {
+            self.contentScrollView.contentInset.bottom = keyboardOverlap
+            self.contentScrollView.verticalScrollIndicatorInsets.bottom = keyboardOverlap
+            
+            if keyboardOverlap > 0 {
+                self.contentScrollView.contentOffset.y = keyboardOverlap + self.contentScrollView.contentOffset.y
+                self.prevOffset = keyboardOverlap
+                self.prevPosition = self.contentScrollView.contentOffset.y
+            }else {
+//                print("확인", self.prevPosition, self.prevOffset, self.contentScrollView.contentOffset.y, self.contentScrollView.frame.height, self.contentScrollView.frame.maxY, endRect.origin.y, keyboardOverlap)
+                self.prevOffset -= (self.prevPosition - self.contentScrollView.contentOffset.y)
+                self.contentScrollView.contentOffset.y = self.contentScrollView.contentOffset.y - self.prevOffset
+            }
+            
+            self.view.layoutIfNeeded()
+        }
+    }
     
     @IBAction func onPressGoBackButton(_ sender: Any) {
         self.presentingViewController?.dismiss(animated: true)
-    }
-    
-    
-}
-
-extension SearchViewController: UITextInteractionDelegate{
-    func interactionWillBegin(_ interaction: UITextInteraction) {
-        print("야호")
     }
 }
 
