@@ -33,6 +33,7 @@ final class SearchViewController: UIViewController {
         )
     }
     
+    // 키보드의 높이, 키보드가 열린 뒤 스크롤뷰의 offset
     var prevOffset: CGFloat = 0.0, prevPosition: CGFloat = 0.0
     
     
@@ -61,7 +62,10 @@ final class SearchViewController: UIViewController {
                 self.prevPosition = self.contentScrollView.contentOffset.y
             }else {
 //                print("확인", self.prevPosition, self.prevOffset, self.contentScrollView.contentOffset.y, self.contentScrollView.frame.height, self.contentScrollView.frame.maxY, endRect.origin.y, keyboardOverlap)
+                
+                //스크롤의 끝에서 키보드를 열었을 경우 오작동 방지
                 self.prevOffset -= (self.prevPosition - self.contentScrollView.contentOffset.y)
+                
                 self.contentScrollView.contentOffset.y = self.contentScrollView.contentOffset.y - self.prevOffset
             }
             
