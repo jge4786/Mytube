@@ -19,59 +19,39 @@ final class SearchViewController: UIViewController {
         addKeyboardObserver()
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
     func addKeyboardObserver() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(keyBoardWillShowAndHide(notification:)),
+            selector: #selector(keyBoardWillShowAndHide),
             name: UIResponder.keyboardWillShowNotification, object: nil
         )
         
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(keyBoardWillShowAndHide(notification:)),
+            selector: #selector(keyBoardWillShowAndHide),
             name: UIResponder.keyboardWillHideNotification, object: nil
         )
     }
-    
-    // 키보드의 높이, 키보드가 열린 뒤 스크롤뷰의 offset
-    var prevOffset: CGFloat = 0.0, prevPosition: CGFloat = 0.0
-    
-    
+        
     @objc func keyBoardWillShowAndHide(notification: NSNotification) {
         let userInfo = notification.userInfo
         guard let endValue = userInfo?[UIResponder.keyboardFrameEndUserInfoKey] else { return }
         guard let durationValue = userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] else { return }
         
-        let endRect = view.convert((endValue as AnyObject).cgRectValue, from: view.window)
+        guard let keyboardHeight = (endValue as? CGRect)?.size.height else { return }
         
         let duration = (durationValue as AnyObject).doubleValue
         
-        let keyboardOverlap = contentScrollView.frame.maxY - endRect.origin.y
-        
-//        print(keyboardOverlap, contentScrollView.contentOffset.y)
-        
-        UIView.animate(withDuration: duration ?? 0.25, delay: 0.0) {
-            self.contentScrollView.contentInset.bottom = keyboardOverlap
-            self.contentScrollView.verticalScrollIndicatorInsets.bottom = keyboardOverlap
+        switch notification.name {
+        case UIResponder.keyboardWillShowNotification:
+            contentScrollView.transform = CGAffineTransform(translationX: 0, y: -keyboardHeight)
+            contentScrollView.contentInset.top = keyboardHeight
             
-            if keyboardOverlap > 0 {
-                self.contentScrollView.contentOffset.y = keyboardOverlap + self.contentScrollView.contentOffset.y
-                self.prevOffset = keyboardOverlap
-                self.prevPosition = self.contentScrollView.contentOffset.y
-            }else {
-//                print("확인", self.prevPosition, self.prevOffset, self.contentScrollView.contentOffset.y, self.contentScrollView.frame.height, self.contentScrollView.frame.maxY, endRect.origin.y, keyboardOverlap)
-                
-                //스크롤의 끝에서 키보드를 열었을 경우 오작동 방지
-                self.prevOffset -= (self.prevPosition - self.contentScrollView.contentOffset.y)
-                
-                self.contentScrollView.contentOffset.y = self.contentScrollView.contentOffset.y - self.prevOffset
-            }
-            
-            self.view.layoutIfNeeded()
+        case UIResponder.keyboardWillHideNotification:
+            contentScrollView.transform = .identity
+            contentScrollView.contentInset.top = 0
+        default:
+            break
         }
     }
     
@@ -93,3 +73,4 @@ extension UIViewController {
         view.endEditing(true)
     }
 }
+
