@@ -19,6 +19,10 @@ final class SearchViewController: UIViewController {
         addKeyboardObserver()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     func addKeyboardObserver() {
         NotificationCenter.default.addObserver(
             self,
@@ -39,8 +43,8 @@ final class SearchViewController: UIViewController {
     
     @objc func keyBoardWillShowAndHide(notification: NSNotification) {
         let userInfo = notification.userInfo
-        let endValue = userInfo![UIResponder.keyboardFrameEndUserInfoKey]
-        let durationValue = userInfo![UIResponder.keyboardAnimationDurationUserInfoKey]
+        guard let endValue = userInfo?[UIResponder.keyboardFrameEndUserInfoKey] else { return }
+        guard let durationValue = userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] else { return }
         
         let endRect = view.convert((endValue as AnyObject).cgRectValue, from: view.window)
         
@@ -50,9 +54,7 @@ final class SearchViewController: UIViewController {
         
 //        print(keyboardOverlap, contentScrollView.contentOffset.y)
         
-        let cottttt = keyboardOverlap - contentScrollView.contentOffset.y
-        
-        UIView.animate(withDuration: duration!, delay: 0.0) {
+        UIView.animate(withDuration: duration ?? 0.25, delay: 0.0) {
             self.contentScrollView.contentInset.bottom = keyboardOverlap
             self.contentScrollView.verticalScrollIndicatorInsets.bottom = keyboardOverlap
             

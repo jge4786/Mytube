@@ -131,7 +131,7 @@
                                 </constraints>
                             </stackView>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tMO-Vd-p09">
-                                <rect key="frame" x="0.0" y="147" width="375" height="582"/>
+                                <rect key="frame" x="0.0" y="147" width="375" height="548"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UyP-Fw-P2w">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="1489.3333333333333"/>
@@ -1212,7 +1212,7 @@
                                 <viewLayoutGuide key="frameLayoutGuide" id="VmT-pb-f82"/>
                             </scrollView>
                             <tabBar contentMode="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="7is-Ox-BTR">
-                                <rect key="frame" x="0.0" y="729" width="375" height="49"/>
+                                <rect key="frame" x="0.0" y="695" width="375" height="83"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <items>
                                     <tabBarItem title="홈" id="IuM-Yx-5qe">
