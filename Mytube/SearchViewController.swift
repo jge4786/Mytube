@@ -11,6 +11,8 @@ final class SearchViewController: UIViewController {
     @IBOutlet weak var contentScrollView: UIScrollView!
     @IBOutlet weak var goBackButton: UIButton!
     
+    func abc(){}
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
