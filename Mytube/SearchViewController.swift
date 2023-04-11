@@ -21,6 +21,7 @@ final class SearchViewController: UIViewController {
     
     func addKeyboardObserver() {
         NotificationCenter.default.addObserver(
+            
             self,
             selector: #selector(keyBoardWillShowAndHide),
             name: UIResponder.keyboardWillShowNotification, object: nil
