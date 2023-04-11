@@ -12,7 +12,7 @@ final class SearchViewController: UIViewController {
     @IBOutlet weak var goBackButton: UIButton!
     
     //test
-    func abc2() {}
+    func abc2() {print("A"); print("B")}
     
     override func viewDidLoad() {
         super.viewDidLoad()
